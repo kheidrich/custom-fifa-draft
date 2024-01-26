@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 const readline = require("readline");
-const players = [
+const participants = [
   { name: "Kevin", chosen: [] },
   { name: "Maico", chosen: [] },
   { name: "Rafael", chosen: [] },
@@ -32,26 +32,12 @@ const teams = [
   console.log(`Total de escolhas: ${teams.length}`);
   printNewLine();
   for (let choose = 1; choose <= teams.length; choose++) {
-    const order = drawSelectionOrder(players);
-    console.log(`Escolha #${choose}: ${order.map((p) => p.name).join(",")}`);
-    for (let player of order) {
-      player.chosen.push(await prompt(`${player.name}: `));
-    }
+    const order = drawSelectionOrder(participants);
+    await chooseRound({ order, round: choose });
   }
 
   console.table(
-    players.reduce((acc, p) => {
-      if (acc.length === 0)
-        for (let chosen of p.chosen)
-          acc.push({
-            [p.name]: chosen,
-          });
-      else 
-        for(let i = 0; i < acc.length; i++) {
-          acc[i][p.name] = p.chosen[i];
-        }
-      return acc;
-    }, [])
+    formatToTable(participants)
   );
 })();
 
@@ -63,6 +49,28 @@ function drawSelectionOrder(players) {
       return p;
     })
     .sort((p1, p2) => p1.order - p2.order);
+}
+
+async function chooseRound({ order, round }) {
+  console.log(`Escolha #${round}: ${order.map((participant) => participant.name).join(",")}`);
+  for (let participant of order) {
+    participant.chosen.push(await prompt(`${participant.name}: `));
+  }
+}
+
+function formatToTable(players) {
+  return players.reduce((acc, p) => {
+    if (acc.length === 0)
+      for (let chosen of p.chosen)
+        acc.push({
+          [p.name]: chosen,
+        });
+    else 
+      for(let i = 0; i < acc.length; i++) {
+        acc[i][p.name] = p.chosen[i];
+      }
+    return acc;
+  }, [])
 }
 
 function printNewLine() {
@@ -77,7 +85,7 @@ function prompt(message) {
     });
     rl.question(message, (answer) => {
       resolve(answer);
-      rl.close();
+      rl.close()
     });
   });
 }
