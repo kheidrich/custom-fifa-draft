@@ -1,0 +1,12 @@
+{
+  "name": "draft-fifa",
+  "version": "1.0.0",
+  "description": "A CLI to sort out players for a offline custom Fifa Draft",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon sorteador.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
